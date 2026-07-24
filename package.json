@@ -4,7 +4,7 @@
   "description": "Early Dementia Detection & Support System",
   "main": "index.html",
   "scripts": {
-    "start": "npx http-server -p 8000",
+    "start": "npx http-server -p $PORT",
     "deploy": "npx firebase deploy"
   },
   "devDependencies": {
