@@ -2,9 +2,9 @@
   "name": "dodgedementia",
   "version": "1.0.0",
   "description": "Early Dementia Detection & Support System",
-  "main": "index.html",
+  "main": "server.js",
   "scripts": {
-    "start": "npx http-server -p ${PORT:-8000}",
+    "start": "node server.js",
     "deploy": "npx firebase deploy"
   },
   "devDependencies": {
