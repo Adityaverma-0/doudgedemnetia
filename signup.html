@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MindCare AI — Create Account</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="login.css">
+</head>
+<body data-role="patient">
+
+<div class="wrapper">
+  <div class="header">
+    <div class="logo-row">
+      <div class="logo-icon">
+        <svg viewBox="0 0 26 26" fill="none">
+          <path d="M13 2C8.03 2 4 6.03 4 11c0 3.5 1.93 6.56 4.8 8.2L13 24l4.2-4.8C20.07 17.56 22 14.5 22 11c0-4.97-4.03-9-9-9z" fill="rgba(255,255,255,0.25)"/>
+        </svg>
+      </div>
+      <div class="logo-name">MindCare <span>AI</span></div>
+    </div>
+    <p class="tagline">Start your cognitive health journey today.</p>
+  </div>
+
+  <div class="role-tabs">
+    <button class="role-tab active" data-role="patient" onclick="switchSignupRole('patient')">
+      <span class="tab-label">Patient</span>
+    </button>
+    <button class="role-tab" data-role="caregiver" onclick="switchSignupRole('caregiver')">
+      <span class="tab-label">Caregiver</span>
+    </button>
+    <button class="role-tab" data-role="doctor" onclick="switchSignupRole('doctor')">
+      <span class="tab-label">Doctor</span>
+    </button>
+  </div>
+
+  <div class="card">
+    <div id="signup-title" class="card-title">Patient Registration</div>
+    <p class="card-subtitle">Create your secure profile to begin health tracking.</p>
+
+    <div class="form-group">
+      <label>Full Name</label>
+      <div class="input-wrap">
+        <input type="text" id="s-name" placeholder="Enter your name">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Email Address</label>
+      <div class="input-wrap">
+        <input type="email" id="s-email" placeholder="name@example.com">
+      </div>
+    </div>
+
+    <div id="role-specific-field" class="form-group" style="display:none;">
+      <label id="role-label">License Number</label>
+      <div class="input-wrap">
+        <input type="text" id="s-extra" placeholder="MCI-XXXXXX">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <div class="input-wrap">
+        <input type="password" id="s-pass" placeholder="••••••••">
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="handleSignup()">
+      <span class="btn-text">Create Account</span>
+    </button>
+
+    <div class="card-footer" style="margin-top:20px;">
+      Already registered? <a href="index.html">Sign In</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchSignupRole(role) {
+    document.body.dataset.role = role;
+    document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`[data-role="${role}"]`).classList.add('active');
+    
+    const extraField = document.getElementById('role-specific-field');
+    const title = document.getElementById('signup-title');
+    
+    if(role === 'doctor') {
+      extraField.style.display = 'block';
+      title.innerText = "Clinical Registration";
+    } else {
+      extraField.style.display = 'none';
+      title.innerText = role.charAt(0).toUpperCase() + role.slice(1) + " Registration";
+    }
+  }
+
+  function handleSignup() {
+    const name = document.getElementById('s-name').value;
+    if(name) {
+      alert(`Welcome to MindCare, ${name}! Redirecting to login...`);
+      window.location.href = 'index.html';
+    } else {
+      alert("Please enter your name.");
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caregiver Dashboard - John Smith</title>
+    <link rel="stylesheet" href="Cargiver.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-spinner">
+            <i class="fas fa-brain"></i>
+            <p>Loading Dashboard...</p>
+        </div>
+    </div>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <!-- Header Section -->
+    <header class="header">
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="header-left">
+            <button class="home-btn" id="homeBtn">
+                <i class="fas fa-home"></i>
+            </button>
+            <div class="header-text">
+                <h1>Caregiver Dashboard</h1>
+                <div class="patient-info">
+                    <span class="status-indicator online"></span>
+                    <p>Monitoring: <strong>John Doe</strong></p>
+                </div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search activities...">
+                <i class="fas fa-search"></i>
+            </div>
+            <button class="notifications-btn" id="notificationsBtn" aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge" id="notificationCount">3</span>
+            </button>
+            <button class="generate-report-btn" id="generateReportBtn">Generate Report</button>
+        </div>
+    </header>
+
+    <!-- Notifications Panel -->
+    <div id="notificationsPanel" class="notifications-panel">
+        <div class="panel-header">
+            <h3>Notifications</h3>
+            <button class="close-btn" id="closeNotifications">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="notifications-list" id="notificationsList">
+            <!-- Dynamic content -->
+        </div>
+    </div>
+
+    <main class="dashboard">
+        <!-- Top Statistics Cards -->
+        <section class="stats-grid">
+            <div class="stat-card risk-card" data-risk="28">
+                <div class="stat-header">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Current Risk Score</h3>
+                </div>
+                <div class="risk-score" id="riskScore">28 / 100</div>
+                <div class="risk-badge low-risk">Low Risk</div>
+                <p class="status-text">Stable condition <i class="fas fa-arrow-up trend-positive"></i></p>
+            </div>
+
+            <div class="stat-card tests-card">
+                <div class="stat-header">
+                    <i class="fas fa-clipboard-check"></i>
+                    <h3>Tests Completed</h3>
+                </div>
+                <div class="tests-count" id="testsCount">15</div>
+                <p>this week</p>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-progress="75"></div>
+                    </div>
+                    <span class="progress-label">78% completion rate</span>
+                </div>
+            </div>
+
+            <div class="stat-card assessment-card">
+                <div class="stat-header">
+                    <i class="fas fa-clock"></i>
+                    <h3>Last Assessment</h3>
+                </div>
+                <div class="assessment-time" id="lastAssessmentTime">2 hours ago</div>
+                <div class="assessment-details">
+                    <span>Memory Test - Score: <strong id="lastScore">85%</strong></span>
+                    <div class="excellent-badge">Excellent</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="charts-section">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Cognitive Performance Trend</h3>
+                    <p>Average test scores over the past 6 weeks</p>
+                    <button class="chart-toggle" id="chartToggle">
+                        <span>Weekly</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+                <div class="ai-insight">
+                    <div class="ai-insight-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="ai-insight-content">
+                        <h4>🤖 AI Insight</h4>
+                        <p id="aiInsightText">Performance shows normal variation within expected range. Slight dip in week 4 but recovered well. No concerning patterns detected.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dual Section -->
+        <section class="dual-section">
+            <div class="chart-card activity-card">
+                <div class="chart-header">
+                    <h3>Activity Completion Rates</h3>
+                    <select id="activityFilter" class="filter-select">
+                        <option>All Activities</option>
+                        <option>Memory Tests</option>
+                        <option>Speech Tests</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="activityChart"></canvas>
+                </div>
+            </div>
+
+            <div class="alerts-card">
+                <div class="card-header">
+                    <h3>Recent Alerts & Updates</h3>
+                    <button class="clear-all-btn" id="clearAlerts">Clear All</button>
+                </div>
+                <div class="alert-list" id="alertList">
+                    <!-- Dynamic alerts populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Timeline Section -->
+        <section class="timeline-section">
+            <div class="chart-card">
+                <div class="card-header">
+                    <h3>Today's Activity Timeline</h3>
+                    <button class="add-activity-btn" id="addActivityBtn">
+                        <i class="fas fa-plus"></i> Add Activity
+                    </button>
+                </div>
+                <div class="timeline" id="timeline">
+                    <!-- Dynamic timeline populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Action Cards -->
+        <section class="action-grid">
+            <div class="action-card" data-modal="reminders">
+                <div class="action-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <h3>Set Reminders</h3>
+                <p>Schedule medication and appointments</p>
+                <button class="action-btn primary">Manage Reminders</button>
+            </div>
+            <div class="action-card" data-modal="alerts">
+                <div class="action-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <h3>Configure Alerts</h3>
+                <p>Customize notification settings</p>
+                <button class="action-btn secondary">Alert Settings</button>
+            </div>
+            <div class="action-card" data-modal="history">
+                <div class="action-icon">
+                    <i class="fas fa-history"></i>
+                </div>
+                <h3>View Full History</h3>
+                <p>Access complete assessment records</p>
+                <button class="action-btn primary">View History</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <div id="modalContainer" class="modal-container"></div>
+
+    <script src="Cargiver.js"></script>
+</body>
+</html>

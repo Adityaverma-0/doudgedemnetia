@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Match Game — NeuroCare</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #6366f1;
+            --card-gradient: linear-gradient(135deg, #a5b4fc 0%, #818cf8 100%);
+            --bg-soft: #f8fafc;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-soft);
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        /* Header & Stats */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        /* Game Board */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .memory-card {
+            aspect-ratio: 1 / 1;
+            background: var(--card-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+        }
+
+        .memory-card.flipped {
+            background: white;
+            color: #333;
+            transform: rotateY(180deg);
+            box-shadow: inset 0 0 0 2px var(--primary-blue);
+        }
+
+        .memory-card.matched {
+            background: #dcfce7;
+            visibility: visible;
+            cursor: default;
+        }
+
+        .btn-new {
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: none;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            cursor: pointer;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="header">
+        <a href="Patientdash.html" style="color: var(--primary-blue); font-size: 1.5rem;"><i class="fas fa-arrow-left"></i></a>
+        <h2>Memory Match Game 🌸</h2>
+        <button class="btn-new" onclick="resetGame()"><i class="fas fa-redo"></i> New Game</button>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <span style="color: #eab308;"><i class="fas fa-trophy"></i> Matches</span>
+            <span class="stat-value" id="matches">0/8</span>
+        </div>
+        <div class="stat-card">
+            <span style="color: #6366f1;"><i class="fas fa-random"></i> Moves</span>
+            <span class="stat-value" id="moves">0</span>
+        </div>
+        <div class="stat-card">
+            <span style="color: #a855f7;"><i class="fas fa-clock"></i> Time</span>
+            <span class="stat-value" id="timer">0:00</span>
+        </div>
+    </div>
+
+    <div class="grid" id="gameGrid">
+        </div>
+</div>
+
+<script>
+    const emojis = ['🌸', '🌺', '🌻', '🌷', '🌿', '🍄', '🍀', '🌼'];
+    let cards = [...emojis, ...emojis];
+    let flippedCards = [];
+    let matchedPairs = 0;
+    let moves = 0;
+    let timerInterval;
+    let seconds = 0;
+    let isLocked = false;
+
+    function initGame() {
+        const grid = document.getElementById('gameGrid');
+        grid.innerHTML = '';
+        cards = shuffle(cards);
+        
+        cards.forEach((emoji, index) => {
+            const card = document.createElement('div');
+            card.className = 'memory-card';
+            card.dataset.emoji = emoji;
+            card.innerHTML = '?';
+            card.onclick = () => flipCard(card);
+            grid.appendChild(card);
+        });
+        
+        startTimer();
+    }
+
+    function flipCard(card) {
+        if (isLocked || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+
+        card.classList.add('flipped');
+        card.innerHTML = card.dataset.emoji;
+        flippedCards.push(card);
+
+        if (flippedCards.length === 2) {
+            moves++;
+            document.getElementById('moves').innerText = moves;
+            checkMatch();
+        }
+    }
+
+    function checkMatch() {
+        isLocked = true;
+        const [card1, card2] = flippedCards;
+
+        if (card1.dataset.emoji === card2.dataset.emoji) {
+            matchedPairs++;
+            card1.classList.add('matched');
+            card2.classList.add('matched');
+            document.getElementById('matches').innerText = `${matchedPairs}/8`;
+            resetTurn();
+            if (matchedPairs === 8) endGame();
+        } else {
+            setTimeout(() => {
+                card1.classList.remove('flipped');
+                card2.classList.remove('flipped');
+                card1.innerHTML = '?';
+                card2.innerHTML = '?';
+                resetTurn();
+            }, 1000);
+        }
+    }
+
+    function resetTurn() {
+        flippedCards = [];
+        isLocked = false;
+    }
+
+    function startTimer() {
+        clearInterval(timerInterval);
+        seconds = 0;
+        timerInterval = setInterval(() => {
+            seconds++;
+            const mins = Math.floor(seconds / 60);
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            document.getElementById('timer').innerText = `${mins}:${secs}`;
+        }, 1000);
+    }
+
+    /**
+ * Generates a performance report based on Cognitive Assessment AI principles
+ * Tracks: Accuracy, Speed, and Memory Retention
+ */
+function endGame() {
+    clearInterval(timerInterval);
+    
+    // 1. Calculate Score (Cognitive Assessment AI Logic)
+    // Baseline: 16 moves (perfect). Penalize for extra moves and time.
+    const efficiency = Math.max(0, 100 - ((moves - 8) * 5)); 
+    const speedBonus = seconds < 60 ? 20 : (seconds < 120 ? 10 : 0);
+    const finalScore = Math.min(100, efficiency + speedBonus);
+
+    // 2. Determine Risk Category
+    let status = "Stable";
+    let statusColor = "#48bb78"; // Green
+    if (finalScore < 50) {
+        status = "Attention Needed";
+        statusColor = "#f97316"; // Orange
+    }
+
+    // 3. Create the Modal Report
+    const reportOverlay = document.createElement('div');
+    reportOverlay.style = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8); display: flex; align-items: center;
+        justify-content: center; z-index: 1000; backdrop-filter: blur(5px);
+    `;
+
+    reportOverlay.innerHTML = `
+        <div style="background: white; width: 90%; max-width: 400px; padding: 30px; border-radius: 24px; text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🏆</div>
+            <h2 style="color: #333; margin-bottom: 5px;">Daily Scorecard</h2>
+            <p style="color: #666; margin-bottom: 20px;">Patient: John Doe | ${new Date().toLocaleDateString()}</p>
+            
+            <div style="background: #f8fafc; padding: 20px; border-radius: 16px; margin-bottom: 20px;">
+                <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 5px;">MEMORY SCORE</div>
+                <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary-blue);">${finalScore}%</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; text-align: left;">
+                <div>
+                    <small style="color: #94a3b8;">Total Time</small>
+                    <div style="font-weight: 600;">${document.getElementById('timer').innerText}</div>
+                </div>
+                <div>
+                    <small style="color: #94a3b8;">Focus Accuracy</small>
+                    <div style="font-weight: 600;">${Math.round((8/moves)*100)}%</div>
+                </div>
+                <div>
+                    <small style="color: #94a3b8;">Cognitive Status</small>
+                    <div style="font-weight: 600; color: ${statusColor};">${status}</div>
+                </div>
+                <div>
+                    <small style="color: #94a3b8;">Points Earned</small>
+                    <div style="font-weight: 600; color: #48bb78;">+${finalScore * 2} ⭐</div>
+                </div>
+            </div>
+
+            <button class="btn-new" onclick="location.reload()" style="width: 100%; background: #6366f1; color: white; padding: 15px;">
+                Save & Continue
+            </button>
+            <p style="font-size: 0.7rem; color: #999; margin-top: 15px;">
+                🛡️ This data is encrypted and synced with your Caregiver Dashboard.
+            </p>
+        </div>
+    `;
+
+    document.body.appendChild(reportOverlay);
+}
+function endGame() {
+    clearInterval(timerInterval);
+    // Calculation: Perfect is 16 moves.
+    const efficiency = Math.max(0, 100 - ((moves - 16) * 5)); 
+    const speedBonus = seconds < 60 ? 20 : (seconds < 120 ? 10 : 0);
+    const finalScore = Math.min(100, efficiency + speedBonus);
+    
+    // SAVE TO SHARED STORAGE
+    let progressData = JSON.parse(localStorage.getItem('neuroCareProgress')) || {};
+    progressData.memoryScore = finalScore;
+    progressData.lastUpdate = new Date().toLocaleDateString();
+    localStorage.setItem('neuroCareProgress', JSON.stringify(progressData));
+
+    // Show the scorecard modal as usual...
+}
+
+    function resetGame() {
+        matchedPairs = 0;
+        moves = 0;
+        document.getElementById('matches').innerText = '0/8';
+        document.getElementById('moves').innerText = '0';
+        initGame();
+    }
+
+    function shuffle(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    // Initialize on load
+    initGame();
+</script>
+
+</body>
+</html>

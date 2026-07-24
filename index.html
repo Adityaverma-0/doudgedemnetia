@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>login-page</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="login.css">
+</head>
+
+<body data-role="patient">
+
+
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="wrapper">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="logo-row">
+        <div class="logo-icon">
+          <svg viewBox="0 0 26 26" fill="none">
+            <path
+              d="M13 2C8.03 2 4 6.03 4 11c0 3.5 1.93 6.56 4.8 8.2L13 24l4.2-4.8C20.07 17.56 22 14.5 22 11c0-4.97-4.03-9-9-9z"
+              fill="rgba(255,255,255,0.25)" />
+            <circle cx="9" cy="10" r="2.2" fill="white" />
+            <circle cx="17" cy="10" r="2.2" fill="white" />
+            <path d="M8 15.5c1.3 2 6.7 2 8 0" stroke="white" stroke-width="1.8" stroke-linecap="round" />
+          </svg>
+        </div>
+        <div class="logo-name"><span>DodgeDementia</span></div>
+      </div>
+      <p class="tagline">Early Dementia Detection &amp; Support System</p>
+    </div>
+
+    <!-- Role Tabs -->
+    <div class="role-tabs" role="tablist" aria-label="User type">
+      <button class="role-tab active" data-role="patient" role="tab" aria-selected="true" aria-controls="panel-patient"
+        id="tab-patient">
+        <div class="tab-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M9.5 2a2.5 2.5 0 0 1 5 0" />
+            <path d="M4 5h16v2a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V5z" />
+            <path d="M4 13a8 8 0 0 0 16 0" />
+            <line x1="12" y1="17" x2="12" y2="21" />
+          </svg>
+        </div>
+        <span class="tab-label">Patient</span>
+      </button>
+      <button class="role-tab" data-role="caregiver" role="tab" aria-selected="false" aria-controls="panel-caregiver"
+        id="tab-caregiver">
+        <div class="tab-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        </div>
+        <span class="tab-label">Caregiver</span>
+      </button>
+      <button class="role-tab" data-role="doctor" role="tab" aria-selected="false" aria-controls="panel-doctor"
+        id="tab-doctor">
+        <div class="tab-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path
+              d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" />
+            <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4" />
+            <circle cx="20" cy="10" r="2" />
+          </svg>
+        </div>
+        <span class="tab-label">Doctor</span>
+      </button>
+    </div>
+
+    <!-- Card -->
+    <div class="card">
+
+      <!-- Patient Panel -->
+      <div class="role-panel active" id="panel-patient" role="tabpanel" aria-labelledby="tab-patient">
+        <div class="card-title">Welcome back</div>
+        <p class="card-subtitle">Sign in to continue your cognitive health journey.</p>
+
+        <div class="form-group">
+          <label for="p-email">Email address</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
+            <input type="email" id="p-email" placeholder="you@example.com" autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="p-pass">Password</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <input type="password" id="p-pass" placeholder="••••••••" autocomplete="current-password" />
+            <button type="button" class="eye-toggle" onclick="togglePwd('p-pass',this)"
+              aria-label="Toggle password visibility">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="extras">
+          <label class="remember"><input type="checkbox" id="p-rem" /> Remember me</label>
+          <a href="#" class="forgot">Forgot password?</a>
+        </div>
+
+        <button class="btn-primary" onclick="handleLogin(this,'Sign In as Patient','patient')">
+          <div class="spinner"></div>
+          <span class="btn-text" style="display:flex;align-items:center;gap:8px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+              <polyline points="10 17 15 12 10 7" />
+              <line x1="15" y1="12" x2="3" y2="12" />
+            </svg>
+            Sign In as Patient
+          </span>
+        </button>
+
+        <div class="divider">or continue with</div>
+        <div class="sso-row">
+          <button class="btn-sso"><img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" />
+            Google</button>
+          <button class="btn-sso"><img src="https://www.svgrepo.com/show/448234/apple.svg" alt="Apple" /> Apple</button>
+        </div>
+        <div class="card-footer">New to MindCare? <a href="#">Create account</a></div>
+      </div>
+
+      <!-- Caregiver Panel -->
+      <div class="role-panel" id="panel-caregiver" role="tabpanel" aria-labelledby="tab-caregiver">
+        <div class="card-title">Caregiver Portal</div>
+        <p class="card-subtitle">Monitor your loved one's cognitive health and receive real-time alerts.</p>
+
+        <div class="form-group">
+          <label for="c-email">Email address</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
+            <input type="email" id="c-email" placeholder="caregiver@example.com" autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="c-relation">Relationship to patient</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+            <select id="c-relation">
+              <option value="">Select relationship…</option>
+              <option>Spouse / Partner</option>
+              <option>Child</option>
+              <option>Sibling</option>
+              <option>Parent</option>
+              <option>Professional Caregiver</option>
+              <option>Other</option>
+            </select>
+            <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="c-pass">Password</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <input type="password" id="c-pass" placeholder="••••••••" autocomplete="current-password" />
+            <button type="button" class="eye-toggle" onclick="togglePwd('c-pass',this)"
+              aria-label="Toggle password visibility">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="extras">
+          <label class="remember"><input type="checkbox" /> Remember me</label>
+          <a href="#" class="forgot">Forgot password?</a>
+        </div>
+
+        <button class="btn-primary" onclick="handleLogin(this,'Access Dashboard','caregiver')">
+          <div class="spinner"></div>
+          <span class="btn-text" style="display:flex;align-items:center;gap:8px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+              <polyline points="10 17 15 12 10 7" />
+              <line x1="15" y1="12" x2="3" y2="12" />
+            </svg>
+            Access Dashboard
+          </span>
+        </button>
+
+        <div class="divider">or continue with</div>
+        <div class="sso-row">
+          <button class="btn-sso"><img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" />
+            Google</button>
+          <button class="btn-sso"><img src="https://www.svgrepo.com/show/448234/apple.svg" alt="Apple" /> Apple</button>
+        </div>
+        <div class="card-footer">Not registered? <a href="#">Request access</a></div>
+      </div>
+
+      <!-- Doctor Panel -->
+      <div class="role-panel" id="panel-doctor" role="tabpanel" aria-labelledby="tab-doctor">
+        <div class="card-title">Clinical Portal</div>
+        <p class="card-subtitle">Secure two-factor access for licensed medical professionals.</p>
+
+        <div class="notice">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          Restricted to verified healthcare professionals. A 2FA code will be sent after credential verification.
+        </div>
+
+        <div class="form-group" style="margin-top:18px">
+          <label for="d-email">Institutional email</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
+            <input type="email" id="d-email" placeholder="dr.name@hospital.org" autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="license-row">
+          <div class="form-group">
+            <label for="d-lic">License no.</label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+              </svg>
+              <input type="text" id="d-lic" placeholder="MCI-XXXXXX" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="d-spec">Specialty</label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+              <select id="d-spec">
+                <option value="">Select…</option>
+                <option>Neurologist</option>
+                <option>Geriatrician</option>
+                <option>Psychiatrist</option>
+                <option>General Physician</option>
+                <option>Other</option>
+              </select>
+              <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="d-pass">Password</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <input type="password" id="d-pass" placeholder="••••••••" autocomplete="current-password" />
+            <button type="button" class="eye-toggle" onclick="togglePwd('d-pass',this)"
+              aria-label="Toggle password visibility">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- MFA section -->
+        <div id="mfa-section" style="display:none">
+          <div class="form-group" style="margin-bottom:8px">
+            <label style="text-align:center;display:block;margin-bottom:14px">Enter 6-digit verification code</label>
+            <div class="otp-row">
+              <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]"
+                aria-label="Digit 1" />
+              <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]"
+                aria-label="Digit 2" />
+              <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]"
+                aria-label="Digit 3" />
+              <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]"
+                aria-label="Digit 4" />
+              <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]"
+                aria-label="Digit 5" />
+              <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]"
+                aria-label="Digit 6" />
+            </div>
+          </div>
+          <p class="mfa-note">Code sent to your institutional email. <a href="#">Resend</a></p>
+        </div>
+
+        <div class="extras">
+          <label class="remember"><input type="checkbox" /> Remember this device</label>
+          <a href="#" class="forgot">Forgot password?</a>
+        </div>
+
+        <button class="btn-primary" id="d-btn" onclick="handleDoctorLogin(this)">
+          <div class="spinner"></div>
+          <span class="btn-text" style="display:flex;align-items:center;gap:8px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            login
+          </span>
+        </button>
+
+        <div class="card-footer" style="margin-top:16px">
+          Need clinical access? <a href="#">Apply for credentials</a>
+        </div>
+      </div>
+
+    </div><!-- /card -->
+
+    <!-- Badges -->
+    <div class="badges">
+      <div class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+        256-bit encrypted
+      </div>
+      <div class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+        HIPAA Compliant
+      </div>
+      <div class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+        Privacy-First
+      </div>
+    </div>
+    <div class="header finisher-header" style="min-width: 100vw; min-height: 100vh;">
+    </div>
+
+
+    <script type="text/javascript" src="login.js">
+
+    </script>
+</body>
+
+</html>

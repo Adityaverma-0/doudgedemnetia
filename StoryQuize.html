@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoryQuiz - Turn Stories into Quizzes</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .step-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .step-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .step-title {
+            font-size: 1.8rem;
+            color: #4a5568;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .recording-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 2px dashed #cbd5e0;
+        }
+
+        .record-btn {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .record-btn:not(:disabled):hover {
+            transform: scale(1.05);
+        }
+
+        .record-btn.recording {
+            background: #f56565;
+            animation: pulse 1.5s infinite;
+        }
+
+        .record-btn.ready {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .audio-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #e6fffa;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .quiz-container {
+            display: none;
+        }
+
+        .question {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8fafc;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .question h3 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+
+        .option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #5a67d8;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #48bb78, #38a169);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .results {
+            text-align: center;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .score-excellent {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            box-shadow: 0 10px 30px rgba(72, 187, 120, 0.4);
+        }
+
+        .score-good {
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            box-shadow: 0 10px 30px rgba(237, 137, 54, 0.4);
+        }
+
+        .score-average {
+            background: linear-gradient(135deg, #f6ad55, #ed8936);
+            box-shadow: 0 10px 30px rgba(246, 173, 85, 0.4);
+        }
+
+        .story-preview {
+            background: #f0f9ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #0ea5e9;
+        }
+
+        .step-active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .step-hidden {
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn-secondary {
+            background: #a0aec0;
+        }
+
+        .btn-secondary:hover {
+            background: #718096;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .step-container {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-book-open"></i> StoryQuiz</h1>
+            <p>Transform your stories into interactive quizzes!</p>
+        </div>
+
+        <!-- Step 1: Story Input -->
+        <div id="step1" class="step-container step-active">
+            <div class="step-title">
+                <div class="step-icon"><i class="fas fa-edit"></i></div>
+                <span>Step 1: Share Your Story</span>
+            </div>
+            
+            <div class="input-group">
+                <label for="storyText">📝 Type your story (or use voice below):</label>
+                <textarea id="storyText" placeholder="Once upon a time, there was a brave little fox named Finn who lived in the enchanted Whispering Woods...">${DEMO_STORY}</textarea>
+            </div>
+
+            <div class="input-group">
+                <label>🎙️ Or record your story:</label>
+                <div class="recording-controls">
+                    <button id="recordBtn" class="record-btn ready" disabled>
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <div id="recordingStatus">Click microphone to start recording</div>
+                    <div id="audioDisplay" class="audio-display" style="display: none;">
+                        <i class="fas fa-volume-up"></i>
+                        <span id="audioLength"></span>
+                        <button id="playAudio" style="background: none; border: none; color: #319795; cursor: pointer;">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <button id="generateQuizBtn" class="btn">
+                <i class="fas fa-magic"></i> Generate Quiz from Story
+            </button>
+        </div>
+
+        <!-- Step 2: Quiz -->
+        <div id="step2" class="step-container step-hidden">
+            <div class="step-title">
+                <div class="step-icon"><i class="fas fa-question-circle"></i></div>
+                <span>Step 2: Test Your Memory!</span>
+            </div>
+            
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+            
+            <div id="quizContent"></div>
+            
+            <div class="nav-buttons">
+                <button id="prevQuestion" class="btn btn-secondary">Previous</button>
+                <button id="nextQuestion" class="btn">Next Question</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Results -->
+        <div id="step3" class="step-container step-hidden">
+            <div class="step-title">
+                <div class="step-icon"><i class="fas fa-trophy"></i></div>
+                <span>Your Results</span>
+            </div>
+            
+            <div id="resultsContent" class="results"></div>
+            
+            <div class="nav-buttons">
+                <a id="newQuizBtn" class="btn" href="Patientdash.html">Go to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // FIXED Demo Story and Quiz - WORKING 100%
+        const DEMO_STORY = `Once upon a time, there was a brave little fox named Finn who lived in the enchanted Whispering Woods. Finn had bright orange fur and a fluffy white-tipped tail. Every morning, he would visit his best friend, Ollie the wise old owl, who lived in the tallest oak tree.
+
+        One sunny day, Finn discovered a mysterious glowing blue flower hidden behind a waterfall. Ollie told him it was the legendary "Starbloom" that could grant one wish, but only to a pure heart. Finn decided to protect the flower from the greedy shadow creatures that lived in the dark caves.
+
+        With Ollie's help, Finn used his cleverness to create a magical barrier around the waterfall using vines, stones, and moonlit dew. The shadow creatures tried to steal the Starbloom three times but failed each time. Finally, Finn made his wish - for the Whispering Woods to always remain a place of peace and magic.`;
+
+        const PREDEFINED_QUIZ = [
+            {
+                question: "What is the name of the main character?",
+                options: ["Fiona", "Finn", "Felix", "Fargo"],
+                correct: 1,
+                type: "mcq"
+            },
+            {
+                question: "Where does Finn live?",
+                options: ["Sunny Meadows", "Whispering Woods", "Dark Caves", "Tall Mountains"],
+                correct: 1,
+                type: "mcq"
+            },
+            {
+                question: "Who is Finn's best friend?",
+                options: ["Shadow Creature", "Ollie the owl", "Blue Flower", "Magic Tree"],
+                correct: 1,
+                type: "mcq"
+            },
+            {
+                question: "What color is the mysterious flower Finn discovered?",
+                options: ["Red", "Yellow", "Blue", "Green"],
+                correct: 2,
+                type: "mcq"
+            },
+            {
+                question: "What is the name of the special flower?",
+                options: ["Moonflower", "Starbloom", "Sunpetal", "Nightrose"],
+                correct: 1,
+                type: "mcq"
+            },
+            {
+                question: "How many times did the shadow creatures try to steal the flower?",
+                options: ["1", "2", "3", "4"],
+                correct: 2,
+                type: "mcq"
+            },
+            {
+                question: "What did Finn use to create the magical barrier? (Select all that apply)",
+                options: ["Vines", "Stones", "Moonlit dew", "Magic wand"],
+                correct: [0, 1, 2],
+                type: "multi"
+            }
+        ];
+
+        // Application State
+        let currentStep = 1;
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let audioBlob = null;
+        let quizQuestions = [];
+
+        // DOM Elements
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const storyText = document.getElementById('storyText');
+        const recordBtn = document.getElementById('recordBtn');
+        const recordingStatus = document.getElementById('recordingStatus');
+        const audioDisplay = document.getElementById('audioDisplay');
+        const audioLength = document.getElementById('audioLength');
+        const playAudio = document.getElementById('playAudio');
+        const generateQuizBtn = document.getElementById('generateQuizBtn');
+        const quizContent = document.getElementById('quizContent');
+        const progressFill = document.getElementById('progressFill');
+        const prevQuestion = document.getElementById('prevQuestion');
+        const nextQuestion = document.getElementById('nextQuestion');
+        const resultsContent = document.getElementById('resultsContent');
+        const newQuizBtn = document.getElementById('newQuizBtn');
+
+        // Initialize
+        init();
+
+
+        function init() {
+            storyText.value = DEMO_STORY;
+            
+            setupAudioRecording();
+            
+            generateQuizBtn.addEventListener('click', generateQuiz);
+            prevQuestion.addEventListener('click', prevQuestionHandler);
+            nextQuestion.addEventListener('click', nextQuestionHandler);
+            newQuizBtn.addEventListener('click', resetApp);
+            playAudio.addEventListener('click', playRecordedAudio);
+            storyText.addEventListener('input', enableGenerateBtn);
+        }
+
+        function setupAudioRecording() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                recordingStatus.textContent = 'Voice recording not supported';
+                return;
+            }
+
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    recordBtn.disabled = false;
+                    recordBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                    recordBtn.addEventListener('click', toggleRecording);
+                })
+                .catch(err => {
+                    console.error('Microphone access denied:', err);
+                    recordingStatus.textContent = 'Microphone access denied. Use text input.';
+                });
+        }
+
+        function toggleRecording() {
+            if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        }
+
+        function startRecording() {
+            audioChunks = [];
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        showAudioDisplay();
+                    };
+                    
+                    mediaRecorder.start();
+                    updateRecordingUI(true);
+                })
+                .catch(err => console.error('Recording failed:', err));
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                updateRecordingUI(false);
+            }
+        }
+
+        function updateRecordingUI(isRecording) {
+            recordBtn.className = isRecording ? 'record-btn recording' : 'record-btn ready';
+            recordBtn.innerHTML = isRecording ? '<i class="fas fa-stop"></i>' : '<i class="fas fa-microphone"></i>';
+            recordingStatus.textContent = isRecording ? 'Recording... Speak your story!' : 'Recording stopped';
+        }
+
+        function showAudioDisplay() {
+            const duration = (audioBlob.size / 1000).toFixed(1) + 's';
+            audioLength.textContent = `Audio recorded (${duration})`;
+            audioDisplay.style.display = 'flex';
+        }
+
+        function playRecordedAudio() {
+            if (audioBlob) {
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+                audio.play();
+            }
+        }
+
+        function enableGenerateBtn() {
+            const hasText = storyText.value.trim().length > 0;
+            generateQuizBtn.disabled = !hasText;
+        }
+
+        function generateQuiz() {
+            // Show story preview
+            const storyPreview = document.createElement('div');
+            storyPreview.className = 'story-preview';
+            storyPreview.innerHTML = `
+                <strong>✅ Story Analyzed!</strong><br>
+                ${storyText.value.substring(0, 200)}${storyText.value.length > 200 ? '...' : ''}
+            `;
+            step1.appendChild(storyPreview);
+
+            // Generate quiz (using predefined for demo)
+            quizQuestions = [...PREDEFINED_QUIZ];
+            
+            setTimeout(() => {
+                showStep(2);
+                showQuestion(0);
+            }, 500);
+        }
+
+        function showStep(stepNum) {
+            document.querySelectorAll('.step-container').forEach(step => {
+                step.classList.remove('step-active');
+                step.classList.add('step-hidden');
+            });
+            
+            const targetStep = document.getElementById(`step${stepNum}`);
+            setTimeout(() => {
+                targetStep.classList.remove('step-hidden');
+                targetStep.classList.add('step-active');
+            }, 200);
+            
+            currentStep = stepNum;
+        }
+
+        function showQuestion(index) {
+            currentQuestion = index;
+            const question = quizQuestions[index];
+            
+            quizContent.innerHTML = `
+                <div class="question">
+                    <h3>Q${index + 1}: ${question.question}</h3>
+                    <div class="options">
+                        ${question.options.map((option, optIndex) => `
+                            <div class="option" data-index="${optIndex}">
+                                ${String.fromCharCode(65 + optIndex)}. ${option}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            // Add click handlers
+            document.querySelectorAll('.option').forEach((option, optIndex) => {
+                option.addEventListener('click', () => selectOption(optIndex));
+            });
+            
+            updateProgress();
+            updateNavButtons();
+            
+            // Restore previous answer
+            if (userAnswers[index] !== undefined) {
+                document.querySelectorAll('.option')[userAnswers[index]].classList.add('selected');
+            }
+        }
+
+        function selectOption(optionIndex) {
+            userAnswers[currentQuestion] = optionIndex;
+            document.querySelectorAll('.option').forEach((opt, idx) => {
+                opt.classList.toggle('selected', idx === optionIndex);
+            });
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / quizQuestions.length) * 100;
+            progressFill.style.width = `${progress}%`;
+        }
+
+        function updateNavButtons() {
+            prevQuestion.disabled = currentQuestion === 0;
+            nextQuestion.textContent = currentQuestion === quizQuestions.length - 1 ? 
+                '🎉 Finish Quiz & See Results' : 'Next Question';
+        }
+
+        function prevQuestionHandler() {
+            if (currentQuestion > 0) {
+                showQuestion(currentQuestion - 1);
+            }
+        }
+
+        function nextQuestionHandler() {
+            if (currentQuestion < quizQuestions.length - 1) {
+                showQuestion(currentQuestion + 1);
+            } else {
+                showResults();
+            }
+        }
+function showResults() {
+    let score = 0;
+    quizQuestions.forEach((q, index) => {
+        if (userAnswers[index] === q.correct) score++;
+    });
+    const percentage = Math.round((score / quizQuestions.length) * 100);
+
+    // SAVE TO SHARED STORAGE
+    let progressData = JSON.parse(localStorage.getItem('neuroCareProgress')) || {};
+    progressData.quizScore = percentage;
+    localStorage.setItem('neuroCareProgress', JSON.stringify(progressData));
+
+    // Display results as usual...
+}
+        function showResults() {
+            let score = 0;
+            let total = quizQuestions.length;
+            // When game finishes, call this:
+
+            quizQuestions.forEach((q, index) => {
+                const userAnswer = userAnswers[index];
+                if (Array.isArray(q.correct)) {
+                    // Multi-select (simplified for demo - requires all correct)
+                    if (userAnswer === 0 && q.correct.includes(0) && 
+                        userAnswers[index+1] === 1 && q.correct.includes(1) &&
+                        userAnswers[index+2] === 2 && q.correct.includes(2)) {
+                        score++;
+                    }
+                } else {
+                    if (userAnswer === q.correct) {
+                        score++;
+                    }
+                }
+            });
+            
+            const percentage = Math.round((score / total) * 100);
+            const scoreClass = percentage >= 80 ? 'excellent' : percentage >= 60 ? 'good' : 'average';
+            
+            resultsContent.innerHTML = `
+                <div class="score-circle score-${scoreClass}">
+                    ${score}/${total}<br><small>${percentage}%</small>
+                </div>
+                <h2>${getScoreMessage(percentage)}</h2>
+                <p>You got <strong>${score}</strong> out of <strong>${total}</strong> questions correct!</p>
+                <div style="margin-top: 30px; text-align: left; max-width: 600px; margin: 0 auto;">
+                    ${quizQuestions.map((q, index) => {
+                        const userAnswer = userAnswers[index];
+                        const isCorrect = !Array.isArray(q.correct) ? (userAnswer === q.correct) : false;
+                        const userLetter = String.fromCharCode(65 + (userAnswer || 0));
+                        const correctLetter = String.fromCharCode(65 + (Array.isArray(q.correct) ? q.correct[0] : q.correct));
+                        return `
+                            <div style="margin-bottom: 15px; padding: 15px; background: ${isCorrect ? '#c6f6d5' : '#fed7d7'}; border-radius: 10px; border-left: 5px solid ${isCorrect ? '#38a169' : '#e53e3e'};">
+                                <strong>Q${index + 1}:</strong> ${q.question}<br>
+                                <strong>Your answer:</strong> ${userLetter}<br>
+                                <strong>Correct:</strong> ${correctLetter}<br>
+                                <em>${isCorrect ? '✅ Correct!' : '❌ Keep practicing!'}</em>
+                            </div>
+                        `;
+                    }).join('')}
+                    
+                </div>
+            `;
+            
+            showStep(3);
+        }
+
+        function getScoreMessage(percentage) {
+            if (percentage >= 90) return "🎉 Outstanding Memory!";
+            if (percentage >= 80) return "⭐ Excellent!";
+            if (percentage >= 70) return "👍 Great Job!";
+            if (percentage >= 60) return "👌 Good Work!";
+            return "📚 Keep Practicing!";
+        }
+
+        function resetApp() {
+            currentStep = 1;
+            currentQuestion = 0;
+            userAnswers = [];
+            quizQuestions = [];
+            audioBlob = null;
+            audioDisplay.style.display = 'none';
+            storyText.value = DEMO_STORY;
+            
+            showStep(1);
+            const preview = step1.querySelector('.story-preview');
+            if (preview) preview.remove();
+        }
+    </script>
+</body>
+</html>

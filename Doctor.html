@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Portal - Cognitive Health Monitoring</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="Doctor.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-title">
+                <h1><i class="fas fa-brain"></i> Clinical Portal</h1>
+                <p>Cognitive Health Monitoring & Decision Support</p>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn refresh-btn" id="refreshBtn" title="Refresh Data">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button class="export-btn" id="exportBtn" title="Export All Reports">
+                    <i class="fas fa-download"></i> Export All Reports
+                </button>
+                <a class="header-btn " id="refreshBtn" title="Refresh Data" href="index.html">
+                    <i class="fas fa-sync-alt"></i> logout
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Patient List -->
+        <section class="patient-section">
+            <div class="section-header">
+                <h2><i class="fas fa-users"></i> Patients</h2>
+                <div class="section-actions">
+                    <input type="text" id="patientSearch" placeholder="Search patients..." class="search-input">
+                </div>
+            </div>
+            <div class="patient-grid" id="patientGrid">
+                <!-- Patient cards populated by JS -->
+            </div>
+        </section>
+
+        <!-- Tabs -->
+        <section class="tabs-section">
+            <div class="tabs-header">
+                <button class="tab-btn active" data-tab="overview">
+                    <i class="fas fa-chart-radar"></i> Overview
+                </button>
+                <button class="tab-btn" data-tab="trends">
+                    <i class="fas fa-chart-line"></i> Trends
+                </button>
+                <button class="tab-btn" data-tab="assessments">
+                    <i class="fas fa-clipboard-list"></i> Assessments
+                </button>
+                <button class="tab-btn" data-tab="reports">
+                    <i class="fas fa-file-pdf"></i> Reports
+                </button>
+            </div>
+
+            <!-- Overview Tab -->
+            <div class="tab-content active" id="overview">
+                <div class="summary-grid">
+                    <div class="summary-card risk-card">
+                        <div class="metric-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <h3>Risk Score</h3>
+                        <div class="score-display large" id="riskScore">72</div>
+                        <span class="risk-label high" id="riskLabel">HIGH</span>
+                    </div>
+                    <div class="summary-card">
+                        <div class="metric-icon"><i class="fas fa-file-medical"></i></div>
+                        <h3>Total Assessments</h3>
+                        <div class="score-display" id="totalAssessments">14</div>
+                        <span class="trend positive">+2 this month</span>
+                    </div>
+                    <div class="summary-card">
+                        <div class="metric-icon"><i class="fas fa-chart-bar"></i></div>
+                        <h3>Avg Score</h3>
+                        <div class="score-display" id="avgScore">84.2</div>
+                        <span class="trend neutral">Stable</span>
+                    </div>
+                    <div class="summary-card">
+                        <div class="metric-icon"><i class="fas fa-clock"></i></div>
+                        <h3>Last Test</h3>
+                        <div class="score-display" id="lastTestDate">3 days ago</div>
+                        <span class="trend positive" id="lastTestType">Memory Recall</span>
+                    </div>
+                </div>
+                <div class="chart-row">
+                    <div class="chart-container">
+                        <h4>Cognitive Domain Profile</h4>
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trends Tab -->
+            <div class="tab-content" id="trends">
+                <div class="chart-container large">
+                    <h4>6-Week Cognitive Performance Trends</h4>
+                    <canvas id="lineChart"></canvas>
+                </div>
+                <div class="insights-grid">
+                    <div class="insight-card">
+                        <div class="insight-header">
+                            <h4><i class="fas fa-memory"></i> Memory</h4>
+                            <div class="insight-score positive">+12%</div>
+                        </div>
+                        <p>Improving steadily over 6 weeks with consistent gains</p>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-header">
+                            <h4><i class="fas fa-eye"></i> Attention</h4>
+                            <div class="insight-score warning">-3%</div>
+                        </div>
+                        <p>Slight decline detected. Recommend attention exercises</p>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-header">
+                            <h4><i class="fas fa-comments"></i> Language</h4>
+                            <div class="insight-score positive">+8%</div>
+                        </div>
+                        <p>Consistent improvement across verbal tasks</p>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-header">
+                            <h4><i class="fas fa-puzzle-piece"></i> Problem Solving</h4>
+                            <div class="insight-score neutral">0%</div>
+                        </div>
+                        <p>Stable performance with room for improvement</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assessments Tab -->
+            <div class="tab-content" id="assessments">
+                <div class="section-header">
+                    <h3><i class="fas fa-history"></i> Recent Assessment History</h3>
+                    <div class="section-actions">
+                        <button class="secondary-btn" id="viewAllBtn">View All <i
+                                class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+                <div class="assessment-list" id="assessmentList">
+                    <!-- Assessments populated by JS -->
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div class="tab-content" id="reports">
+                <div class="section-header">
+                    <h3><i class="fas fa-file-alt"></i> Generated Reports</h3>
+                    <div class="section-actions">
+                        <button class="secondary-btn generate-btn" id="generateReportBtn">
+                            <i class="fas fa-plus"></i> Generate New
+                        </button>
+                    </div>
+                </div>
+                <div class="report-grid" id="reportGrid">
+                    <!-- Reports populated by JS -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Clinical Note Warning -->
+    <div class="clinical-note">
+        <div class="note-icon">⚠️</div>
+        <div class="note-content">
+            <strong>Clinical Note:</strong> Monitor patient closely for cognitive decline indicators.
+            Schedule follow-up assessment within 7 days. Consider multidisciplinary consultation.
+        </div>
+        <button class="dismiss-btn" id="dismissNote">Dismiss</button>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p>Loading patient data...</p>
+    </div>
+
+    <script src="Doctor.js"></script>
+</body>
+
+</html>

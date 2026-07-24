@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Recognition — NeuroCare</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Styles remain the same as your provided code */
+        :root {
+            --orange-gradient: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+            --bg-soft: #f8fafc;
+            --primary-text: #1e293b;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-soft); color: var(--primary-text); display: flex; justify-content: center; padding: 20px; }
+        .container { max-width: 600px; width: 100%; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .progress-container { background: #e2e8f0; height: 10px; border-radius: 5px; margin: 20px 0; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--orange-gradient); width: 0%; transition: width 0.4s ease; }
+        .game-card { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; }
+        .sequence-display { display: flex; justify-content: center; gap: 10px; margin: 30px 0; flex-wrap: wrap; }
+        .box { width: 60px; height: 60px; background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; border: 2px solid #e2e8f0; }
+        .box.target { border: 2px dashed #f97316; background: #fff7ed; color: #f97316; }
+        .options-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 30px; }
+        .option-btn { padding: 20px; background: white; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .option-btn:hover { border-color: #f97316; background: #fff7ed; }
+        .feedback { margin-top: 20px; font-weight: 600; min-height: 24px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1 style="color: #f97316;">✨ Pattern Recognition</h1>
+        <p>Find the missing piece in the sequence!</p>
+    </div>
+
+    <div class="game-card">
+        <div style="display: flex; justify-content: space-between; font-weight: 600;">
+            <span id="level-indicator">Level 1 of 5</span>
+            <span id="score-display">Score: 0/5</span>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progress"></div>
+        </div>
+
+        <h3>What comes next in the sequence?</h3>
+        <div class="sequence-display" id="sequence"></div>
+
+        <p style="color: #64748b; font-size: 0.9rem;">Choose the correct answer:</p>
+        <div class="options-grid" id="options"></div>
+        <div id="feedback" class="feedback"></div>
+    </div>
+</div>
+
+<script>
+    const patterns = [
+        { seq: ['1', '2', '1', '2', '1'], ans: '2', opts: ['1', '2', '3', '4'], level: 'Easy' },
+        { seq: ['🍎', '🍌', '🍎', '🍌', '🍎'], ans: '🍌', opts: ['🍎', '🍌', '🍇', '🍒'], level: 'Easy' },
+        { seq: ['2', '4', '6', '8', '10'], ans: '12', opts: ['11', '12', '13', '14'], level: 'Medium' },
+        { seq: ['1', '2', '3', '2', '3', '4', '3', '4'], ans: '5', opts: ['4', '5', '6', '7'], level: 'Medium' },
+        { seq: ['△', '□', '◯', '△', '□'], ans: '◯', opts: ['△', '□', '◯', '☆'], level: 'Hard' }
+    ];
+
+    let currentStep = 0;
+    let score = 0;
+    let penalties = 0; // Tracks penalty points
+
+    function loadLevel() {
+        const p = patterns[currentStep];
+        const seqDiv = document.getElementById('sequence');
+        const optDiv = document.getElementById('options');
+        const feedback = document.getElementById('feedback');
+        
+        document.getElementById('level-indicator').innerText = `Level ${currentStep + 1} of 5 [${p.level}]`;
+        document.getElementById('progress').style.width = `${((currentStep) / 5) * 100}%`;
+        feedback.innerText = '';
+        feedback.style.color = '';
+
+        seqDiv.innerHTML = '';
+        p.seq.forEach(val => {
+            const box = document.createElement('div');
+            box.className = 'box';
+            box.innerText = val;
+            seqDiv.appendChild(box);
+        });
+        
+        const target = document.createElement('div');
+        target.className = 'box target';
+        target.innerText = '?';
+        seqDiv.appendChild(target);
+
+        optDiv.innerHTML = '';
+        p.opts.forEach(val => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = val;
+            btn.onclick = () => checkAnswer(val, p.ans);
+            optDiv.appendChild(btn);
+        });
+    }
+
+    /**
+ * Handles answer selection with negative marking.
+ * Moves the user forward regardless of whether the answer was correct or incorrect.
+ */
+function checkAnswer(val, correct) {
+    const feedback = document.getElementById('feedback');
+    const isCorrect = (val === correct);
+
+    if (isCorrect) {
+        score++;
+        document.getElementById('score-display').innerText = `Score: ${score}/5`;
+        feedback.style.color = '#48bb78'; // Success Green
+        feedback.innerText = '🎉 Correct! Great job!';
+    } else {
+        // Apply penalty and notify user
+        penalties += 10; 
+        feedback.style.color = '#f97316'; // Warning Orange
+        feedback.innerText = '💭 Not quite! (-10 points). Let\'s try the next one.';
+    }
+
+    // Disable all buttons temporarily to prevent double-clicking during transition
+    const buttons = document.querySelectorAll('.option-btn');
+    buttons.forEach(btn => btn.disabled = true);
+
+    // Automatically move forward after a 1.5-second delay
+    setTimeout(() => {
+        currentStep++;
+        if (currentStep < patterns.length) {
+            loadLevel();
+        } else {
+            finishGame();
+        }
+    }, 1500);
+}
+
+   function finishGame() {
+    const baseScore = score * 20; // 5 levels * 20 = 100 max
+    const finalPoints = Math.max(0, baseScore - penalties);
+    const finalScorePercentage = Math.round(finalPoints);
+
+    // SAVE TO SHARED STORAGE
+    let progressData = JSON.parse(localStorage.getItem('neuroCareProgress')) || {};
+    progressData.patternScore = finalScorePercentage;
+    localStorage.setItem('neuroCareProgress', JSON.stringify(progressData));
+    // When game finishes, call this:
+window.opener?.updateGameScore('memory', 92);  // For Memory game
+// OR
+window.parent?.updateGameScore('quiz', 95);    // If embedded
+
+// Or use postMessage for cross-origin:
+window.parent.postMessage({
+    type: 'GAME_SCORE',
+    game: 'quiz', 
+    score: 95
+}, '*');
+    
+    // Trigger the result modal...
+}
+
+
+function finishGame() {
+    document.getElementById('progress').style.width = '100%';
+    
+    // 1. Calculate Metrics
+    const finalScore = Math.round((score / 5) * 100);
+    const pointsEarned = score * 35; // +35 points per level
+    
+    // Determine Logic Status
+    let status = "Strong Reasoning";
+    let statusColor = "#48bb78"; // Success Green
+    let insight = "Your ability to identify sequences remains sharp and consistent.";
+    
+    if (finalScore < 60) {
+        status = "Needs Review";
+        statusColor = "#f97316"; // Warning Orange
+        insight = "Pattern matching was a bit challenging today. Let's try again tomorrow!";
+    }
+
+    // 2. Create the Report Modal
+    const reportOverlay = document.createElement('div');
+    reportOverlay.style = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.85); display: flex; align-items: center;
+        justify-content: center; z-index: 1000; backdrop-filter: blur(8px);
+    `;
+
+    reportOverlay.innerHTML = `
+        <div style="background: white; width: 90%; max-width: 420px; padding: 40px; border-radius: 32px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+            <div style="width: 80px; height: 80px; background: #fff7ed; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <span style="font-size: 2.5rem;">🧩</span>
+            </div>
+            
+            <h2 style="color: #1e293b; margin-bottom: 8px;">Cognitive Insight</h2>
+            <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">Pattern Recognition Analysis</p>
+
+            <div style="background: linear-gradient(135deg, #fef3c7 0%, #fff7ed 100%); padding: 25px; border-radius: 20px; margin-bottom: 25px; border: 1px solid #fed7aa;">
+                <div style="font-size: 0.8rem; color: #92400e; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Logic Accuracy</div>
+                <div style="font-size: 3rem; font-weight: 800; color: #f97316;">${finalScore}%</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; text-align: left;">
+                <div>
+                    <small style="color: #94a3b8; display: block; margin-bottom: 4px;">Status</small>
+                    <div style="font-weight: 700; color: ${statusColor};">${status}</div>
+                </div>
+                <div>
+                    <small style="color: #94a3b8; display: block; margin-bottom: 4px;">Rewards</small>
+                    <div style="font-weight: 700; color: #48bb78;">+${pointsEarned} XP</div>
+                </div>
+            </div>
+
+            <div style="text-align: left; background: #f1f5f9; padding: 15px; border-radius: 12px; margin-bottom: 25px;">
+                <p style="font-size: 0.85rem; color: #475569; line-height: 1.5;"><strong>AI Observation:</strong> ${insight}</p>
+            </div>
+
+            <button onclick="window.location.href='Patientdash.html'" style="width: 100%; background: #f97316; color: white; border: none; padding: 18px; border-radius: 16px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: transform 0.2s;">
+                Sync to Dashboard
+            </button>
+            
+            <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                <i class="fas fa-shield-alt"></i> HIPAA Compliant Data Sync
+            </p>
+        </div>
+    `;
+
+    document.body.appendChild(reportOverlay);
+}
+
+    loadLevel();
+</script>
+</body>
+</html>
